@@ -6,8 +6,7 @@ import java.io.IOException;
 import java.util.*;
 
 /**
-  The AStarSearch class, along with the AStarNode class,
-  implements a generic A* search algorithm.
+  This class contain the methods to find the best path
 */
 public class AStarSearch {
 
@@ -106,12 +105,35 @@ public class AStarSearch {
 	  /** Reads the map from a text file residing on the following path*/
 	  String path ="C:\\Users\\a232832\\eclipse-workspace\\VuyoAStar\\map.txt"; 
 	  File file = new File(path);
-	 
+	  
+	  String grid[][] = new String[20][20]; // Initializes the grid 
+	  int i=0,j=0;
+			  
 	  BufferedReader br = new BufferedReader(new FileReader(file));
-	 
+	  Map<String, String> originalMap = new HashMap<String, String>();
 	  String st = "";
-	  while ((br.readLine()) != null)
+	  String line = br.readLine();
+	  
+	  /** Read line by line from the buffer*/
+	  while ((line = br.readLine())  != null) {
 		st += br.readLine();
-	  System.out.println("The original map is "+ st +"");
+		j=0;
+		String delim = " ";
+		String tokens[] = line.split(delim);
+		for(String a : tokens) {
+			 grid[i][j] = a;
+			 j++;
+		}
+		i++;
+	  }
+      for(i=0;i<20;i++)
+      {
+          for( j=0;j<20;j++)
+          {
+              System.out.print("  "+grid[i][j]);
+          }
+      }
+	  br.close();
+	  //System.out.println("The original map is "+ st +"");
   }
 }
