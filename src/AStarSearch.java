@@ -1,8 +1,10 @@
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.*;
 
 /**
@@ -12,7 +14,7 @@ public class AStarSearch {
 
 
   /**
-    A simple priority list, also called a priority queue.
+    This function implements a priority queue.
     Objects in the list are ordered by their priority,
     determined by the object's Comparable interface.
     The highest priority item is first in the list.
@@ -63,7 +65,7 @@ public class AStarSearch {
     while (!openList.isEmpty()) {
       AStarNode node = (AStarNode)openList.removeFirst();
       if (node == goalNode) {
-        // construct the path from start to goal
+        /**construct the path from start to goal*/
         return constructPath(goalNode);
       }
 
@@ -77,16 +79,16 @@ public class AStarSearch {
         float costFromStart = node.costFromStart +
           node.getCost(neighborNode);
 
-        // check if the neighbor node has not been
-        // traversed or if a shorter path to this
-        // neighbor node is found.
+        /**check if the neighbor node has not been
+         traversed or if a shorter path to this
+         neighbor node is found.*/
         if ((!isOpen && !isClosed) ||
           costFromStart < neighborNode.costFromStart)
         {
           neighborNode.pathParent = node;
           neighborNode.costFromStart = costFromStart;
           neighborNode.estimatedCostToGoal =
-            neighborNode.getEstimatedCost(goalNode);
+          neighborNode.getEstimatedCost(goalNode);
           if (isClosed) {
             closedList.remove(neighborNode);
           }
@@ -98,42 +100,68 @@ public class AStarSearch {
       closedList.add(node);
     }
 
-    // no path found
+    /** Returns a null when there is not path found to the goal state*/
     return null;
   }
+  
+  /** A method that prints the grid for visibility*/
+  public static void printRow(char[][]grid) {
+      for (int i = 0; i < grid[0].length; i++) {
+          for (int j = 0; j < grid.length; j++) {
+              System.out.print(grid[j][i] + " ");
+          }
+          System.out.print("\n");
+      }
+      System.out.println();
+  } 
+  
+  /** Main function for the A* search algorithm*/
   public static void main(String[] args) throws IOException{ 
 	  /** Reads the map from a text file residing on the following path*/
 	  String path ="C:\\Users\\a232832\\eclipse-workspace\\VuyoAStar\\map.txt"; 
-	  File file = new File(path);
-	  
-	  String grid[][] = new String[20][20]; // Initializes the grid 
-	  int i=0,j=0;
-			  
-	  BufferedReader br = new BufferedReader(new FileReader(file));
-	  Map<String, String> originalMap = new HashMap<String, String>();
-	  String st = "";
-	  String line = br.readLine();
-	  
-	  /** Read line by line from the buffer*/
-	  while ((line = br.readLine())  != null) {
-		st += br.readLine();
-		j=0;
-		String delim = " ";
-		String tokens[] = line.split(delim);
-		for(String a : tokens) {
-			 grid[i][j] = a;
-			 j++;
-		}
-		i++;
-	  }
-      for(i=0;i<20;i++)
-      {
-          for( j=0;j<20;j++)
-          {
-              System.out.print("  "+grid[i][j]);
+      
+      File f = new File(""+path);     
+      Scanner in = new Scanner(f);
+      int WIDTH = 20;
+      int HEIGHT = 10;
+      char[][] grid = new char[WIDTH][HEIGHT];
+      try {
+    	  /** Creates the input stream*/
+          BufferedReader newBuf = new BufferedReader(new InputStreamReader(new FileInputStream(path),"UTF-8"));
+          String line ="";
+          char startNode;
+          char endNode;
+          
+          /** Sanitizes the input text*/
+          newBuf.mark(1);
+          if (newBuf.read() != 0xFEFF) {
+        	  newBuf.reset();
           }
+          
+    	  System.out.println("\nThe original map is:");
+          /**add elements to the grid array */
+          for(int y = 0;y < HEIGHT;y++){
+        	  Scanner tempLine = new Scanner(newBuf.readLine());
+              for(int x = 0; x < WIDTH;x++){
+            	  char c = tempLine.next().charAt(0);
+            	  //System.out.println("x: "+x+" y:"+y+" "+c+"");
+                  grid[x][y]= c;
+                  
+                  if(c == "S".charAt(0)) {  /** Sets the start node from the map*/
+                	  startNode = "S".charAt(0);
+                  }
+                  if(c == "E".charAt(0)) {  /** Sets the destination node on the map*/
+                	  endNode = "E".charAt(0);
+                  }
+              }
+          }
+          printRow(grid);
+          newBuf.close(); /** Closes the read stream object*/
+          System.out.println("\nThe best path from S to E is:");
+          //AStarSearch.findPath(startNode, endNode);
+      }catch(IOException e) { /** Handles the error during the file read.*/
+          e.printStackTrace();
       }
-	  br.close();
-	  //System.out.println("The original map is "+ st +"");
+
   }
 }
